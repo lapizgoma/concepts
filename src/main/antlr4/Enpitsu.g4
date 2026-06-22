@@ -1,52 +1,121 @@
 grammar Enpitsu;
 
+// ***************************************
+// 1. REGLAS SINTÁCTICAS 
+// ***************************************
+
 program: PROGRAM ID BRA_OPEN 
  sentence*
- BRA_CLOSE;
+ BRA_CLOSE
+ EOF;
 
-sentence: var_decl | var_assign | println;
+sentence
+	: var_decl 
+	| var_assign 
+	| println
+	| condicionalIf
+	| estructuraDoWhile
+	;
+	
+// VARIABLES
 
-var_decl: VAR ID SEMICOLON;
-var_assign: ID ASSIGN NUM SEMICOLON;
-println: PRINTLN NUM SEMICOLON;
+var_decl: VAR tipo ID SEMICOLON;
 
-// IGNORABLES
-WS
-:
- [ \t\r\n]+ -> skip
-;
+tipo
+	: INT_TYPE
+	| FLOAT_TYPE
+	| STRING_TYPE
+	| BOOLEAN_TYPE
+	;
+
+
+var_assign: ID ASSIGN expresion SEMICOLON;
+
+
+// INSTRUCCIÓN DE SALIDA
+
+println: PRINTLN PAR_OPEN expresion PAR_CLOSE SEMICOLON;
+
+// ESTRUCTURAS DE CONTROL
+
+condicionalIf: IF PAR_OPEN expresion PAR_CLOSE BRA_OPEN sentence* BRA_CLOSE 
+	(ELSE BRA_OPEN sentence* BRA_CLOSE)?;
+	
+estructuraDoWhile: DO BRA_OPEN sentence* BRA_CLOSE WHILE 
+	PAR_OPEN expresion PAR_CLOSE SEMICOLON;
+
+
+// EXPRESIONES
+
+expresion
+	: expresion ( MULT | DIV ) expresion # expMultDiv
+	| expresion ( PLUS | MINUS ) expresion # expSumaResta
+	| expresion ( EQ | NEQ | LT | LEQ | GT | GEQ ) expresion # expRelacional
+	| expresion ( AND | OR ) expresion # expLogica
+	| NOT expresion # expNot
+	| PAR_OPEN expresion PAR_CLOSE # expParentesis
+	| factor # expFactor
+	;
+	
+factor
+	: ID
+	| NUM
+	| FLOAT_VAL
+	| STRING_VAL
+	| BOOLEAN_VAL
+	;
+	
+// ***************************************
+// 2. REGLAS LÉXICAS 
+// ***************************************
 
 // PALABRAS RESERVADAS
 PROGRAM:'program';
 VAR:'var';
 PRINTLN:'println';
+IF: 'if';
+ELSE: 'else';
+DO: 'do';
+WHILE : 'while';
 
-// OPERADORES ARITMÉTICOS
-PLUS:'+';
-MINUS:'-';
-MULT:'*';
-DIV:'/';
+// TIPOS DE DATOS
+INT_TYPE    : 'int';
+FLOAT_TYPE  : 'float';
+STRING_TYPE : 'string';
+BOOLEAN_TYPE: 'boolean';
 
-// OPERADORES LÓGICOS
-AND:'&&';
-OR:'||';
-NOT:'!';
-NEQ:'!=';
-EQ:'==';
-GEQ:'>=';
-LEQ:'<=';
-GT:'>';
-LT:'<';
 
-ASSIGN:'=';
+// VALORES LITERALES
+NUM : '0' | [1-9] [0-09]* ; //para que no acepte 0 a la izq
+FLOAT : '0' '.' [0-9]+ | [1-9] [0-9]* '.' [0-9]+ ;
+STRING_VAL  : '"' (~['"\r\n'] | '\\' .)* '"' ;
+BOOLEAN_VAL : 'true' | 'false';
 
-BRA_OPEN:'{';
-BRA_CLOSE:'}';
-PAR_OPEN:'(';
-PAR_CLOSE:')';
-SEMICOLON:';';
+// SIGNOS Y OPERADORES
+PLUS: '+';
+MINUS: '-';
+MULT: '*';
+DIV: '/';
+AND: '&&';
+OR: '||';
+NOT: '!';
+NEQ: '!=';
+EQ: '==';
+GEQ: '>=';
+LEQ: '<=';
+GT: '>';
+LT: '<';
+ASSIGN: '=';
+BRA_OPEN: '{';
+BRA_CLOSE: '}';
+PAR_OPEN: '(';
+PAR_CLOSE: ')';
+SEMICOLON: ';';
 
 // IDENTIFICADORES
 ID:[a-zA-Z_][a-zA-Z0-9_]*;
 
-NUM:[0-9]+;
+
+// IGNORABLES
+WS :  [ \t\r\n]+ -> skip;
+COMENTARIO_LINEA : '//' ~[\r\n]* -> skip ;
