@@ -29,5 +29,12 @@ public class Main {
         System.out.println(tree.toStringTree(parser));;
         System.out.println("");
         System.out.println("=====================================");
+        
+        try {
+            new Interpreter().visit(tree);
+        } catch (Exception e) {
+            System.err.println("ERROR: " + e.getMessage());
+            System.exit(1);
+        }
     }
 }

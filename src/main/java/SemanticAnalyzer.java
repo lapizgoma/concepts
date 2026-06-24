@@ -13,7 +13,7 @@ public class SemanticAnalyzer extends EnpitsuBaseVisitor<Object> {
 		String nombreVar = ctx.ID().getText();
 		
 		try {
-			tablaSimbolos.declararVariable(nombreVar);
+			tablaSimbolos.declararVariable(nombreVar, null);
 		}catch(Exception e) {
 			e.printStackTrace();
 		}
@@ -26,7 +26,7 @@ public class SemanticAnalyzer extends EnpitsuBaseVisitor<Object> {
 		String nombreVar = ctx.ID().getText();
 		
 		try {
-			tablaSimbolos.asignarValor(nombreVar, null);
+			tablaSimbolos.asignarValor(nombreVar, null, null);
 		}catch (Exception e){
 			e.printStackTrace();
 		}
