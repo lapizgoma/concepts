@@ -25,11 +25,7 @@ public class SymbolTable {
             throw new Exception("Error semántico: La variable "+ nombre +
                     " no fue declarada.");
         }
-        Symbol symbol = tablaSimbolos.get(nombre);
-        if (tipo != null) {
-            symbol.type = tipo;
-        }
-        symbol.value = valor;
+        tablaSimbolos.get(nombre).value = valor;
     }
 
     public Object obtenerValor(String nombre) throws Exception{
