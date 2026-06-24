@@ -1,19 +1,28 @@
+import java.util.ArrayList;
+import java.util.List;
+
 public class SemanticAnalyzer extends EnpitsuBaseVisitor<String> {
 
     private SymbolTable tablaSimbolos;
-    private boolean hayErrores = false;
+    private List<String> errores;
 
     public SemanticAnalyzer() {
-        this.tablaSimbolos = new SymbolTable();
+        tablaSimbolos = new SymbolTable();
+        errores = new ArrayList<>();
     }
 
     public boolean hayErrores() {
-        return hayErrores;
+        return !errores.isEmpty();
+    }
+    
+    public List<String> errores() {
+    	return errores;
     }
 
-    private void error(String mensaje) {
-        System.err.println("ERROR: " + mensaje);
-        hayErrores = true;
+    private void error(org.antlr.v4.runtime.ParserRuleContext ctx, String mensaje) {
+        int linea = ctx.getStart().getLine();
+        int columna = ctx.getStart().getCharPositionInLine();
+        errores.add(String.format("ERROR Semántico en [%d:%d]: %s", linea, columna, mensaje));
     }
     
     @Override
@@ -21,12 +30,11 @@ public class SemanticAnalyzer extends EnpitsuBaseVisitor<String> {
     	String condicion = visit(ctx.expresion());
     	
     	if (!"boolean".equals(condicion)) {
-    		error ("se espera una valor de tipo booleano para la condición del bucle.");
+    		error (ctx.expresion(), "se espera una valor de tipo booleano para la condición del bucle.");
     	}
-    	else {
-        	for (EnpitsuParser.SentenceContext s : ctx.sentence()) {
-                visit(s);
-            }
+
+    	for (EnpitsuParser.SentenceContext s : ctx.sentence()) {
+            visit(s);
         }
     	
     	return null;
@@ -35,11 +43,19 @@ public class SemanticAnalyzer extends EnpitsuBaseVisitor<String> {
     @Override
     public String visitCondicionalIf(EnpitsuParser.CondicionalIfContext ctx) {
         String condicion = visit(ctx.expresion());
+        
         if (condicion != null && !"boolean".equals(condicion)) {
-            error("la condición del 'if' debe ser de tipo 'boolean'. Se obtuvo '" + condicion + "'.");
+            error(ctx.expresion(), "la condición del 'if' debe ser de tipo 'boolean'. Se obtuvo '" + condicion + "'.");
         }
-        else {
-        	for (EnpitsuParser.SentenceContext s : ctx.sentence()) {
+
+        if (ctx.ifSentences != null) {
+            for (EnpitsuParser.SentenceContext s : ctx.ifSentences) {
+                visit(s);
+            }
+        }
+
+        if (ctx.elseSentences != null) {
+            for (EnpitsuParser.SentenceContext s : ctx.elseSentences) {
                 visit(s);
             }
         }
@@ -55,7 +71,7 @@ public class SemanticAnalyzer extends EnpitsuBaseVisitor<String> {
         try {
             tablaSimbolos.declararVariable(nombreVar, tipo);
         } catch (Exception e) {
-            error(e.getMessage());
+            error(ctx, e.getMessage());
         }
 
         return null;
@@ -66,7 +82,7 @@ public class SemanticAnalyzer extends EnpitsuBaseVisitor<String> {
         String nombreVar = ctx.ID().getText();
 
         if (ctx.expresion() == null) {
-            error("expresión de asignación inválida para la variable '" + nombreVar + "'.");
+            error(ctx, "expresión de asignación inválida para la variable '" + nombreVar + "'.");
             return null;
         }
         
@@ -75,10 +91,10 @@ public class SemanticAnalyzer extends EnpitsuBaseVisitor<String> {
         try {
             String tipoVar = tablaSimbolos.obtenerTipo(nombreVar);
             if (tipoExpresion != null && !sonCompatibles(tipoVar, tipoExpresion)) {
-                error("no se puede asignar '" + tipoExpresion + "' a la variable '" + nombreVar + "' de tipo '" + tipoVar + "'.");
+                error(ctx, "no se puede asignar '" + tipoExpresion + "' a la variable '" + nombreVar + "' de tipo '" + tipoVar + "'.");
             }
         } catch (Exception e) {
-            error(e.getMessage());
+            error(ctx, e.getMessage());
         }
 
         return null;
@@ -91,7 +107,7 @@ public class SemanticAnalyzer extends EnpitsuBaseVisitor<String> {
             try {
                 return tablaSimbolos.obtenerTipo(nombreVar);
             } catch (Exception e) {
-                error(e.getMessage());
+                error(ctx, e.getMessage());
                 return null;
             }
         }
@@ -111,13 +127,13 @@ public class SemanticAnalyzer extends EnpitsuBaseVisitor<String> {
         if (ctx.DIV() != null) {
             String textoDer = ctx.expresion(1).getText();
             if (textoDer.equals("0") || textoDer.equals("0.0")) {
-                error("división por cero.");
+                error(ctx, "división por cero.");
                 return null;
             }
         }
 
         if (!esNumerico(izq) || !esNumerico(der)) {
-            error("operación aritmética requiere tipos numéricos, se obtuvo '" + izq + "' y '" + der + "'.");
+            error(ctx, "operación aritmética requiere tipos numéricos, se obtuvo '" + izq + "' y '" + der + "'.");
             return null;
         }
 
@@ -130,7 +146,7 @@ public class SemanticAnalyzer extends EnpitsuBaseVisitor<String> {
         String der = visit(ctx.expresion(1));
 
         if (!esNumerico(izq) || !esNumerico(der)) {
-            error("operación aritmética requiere tipos numéricos, se obtuvo '" + izq + "' y '" + der + "'.");
+            error(ctx, "operación aritmética requiere tipos numéricos, se obtuvo '" + izq + "' y '" + der + "'.");
             return null;
         }
 
@@ -143,7 +159,7 @@ public class SemanticAnalyzer extends EnpitsuBaseVisitor<String> {
         String der = visit(ctx.expresion(1));
 
         if (!sonCompatibles(izq, der)) {
-            error("comparación entre tipos incompatibles '" + izq + "' y '" + der + "'.");
+            error(ctx, "comparación entre tipos incompatibles '" + izq + "' y '" + der + "'.");
         }
 
         return "boolean";
@@ -155,7 +171,7 @@ public class SemanticAnalyzer extends EnpitsuBaseVisitor<String> {
         String der = visit(ctx.expresion(1));
 
         if (!"boolean".equals(izq) || !"boolean".equals(der)) {
-            error("operador lógico requiere booleanos, se obtuvo '" + izq + "' y '" + der + "'.");
+            error(ctx, "operador lógico requiere booleanos, se obtuvo '" + izq + "' y '" + der + "'.");
         }
 
         return "boolean";
@@ -165,7 +181,7 @@ public class SemanticAnalyzer extends EnpitsuBaseVisitor<String> {
     public String visitExpNot(EnpitsuParser.ExpNotContext ctx) {
         String tipo = visit(ctx.expresion());
         if (!"boolean".equals(tipo)) {
-            error("'!' requiere un booleano, se obtuvo '" + tipo + "'.");
+            error(ctx, "'!' requiere un booleano, se obtuvo '" + tipo + "'.");
         }
         return "boolean";
     }

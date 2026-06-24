@@ -40,8 +40,16 @@ public class Main {
             System.err.println("ERROR: " + e.getMessage());
             System.exit(1);
         }
-        
-        System.out.println((sa.hayErrores()) ? "Hubo errores en en analisis semantico." : "No hubo errores en el analisis semantico.");
+
+        if (sa.hayErrores()) {
+        	System.out.println("Hubo errores en el analisis semantico: ");
+        	for (String error : sa.errores()) {
+                System.out.println(error);
+        	}
+        }
+        else {
+        	System.out.println ("No hubo errores en el analisis semantico.");
+        }
         System.out.println("");
         System.out.println("==================================================");
         System.out.println("");
