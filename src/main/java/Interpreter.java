@@ -1,5 +1,4 @@
 public class Interpreter extends EnpitsuBaseVisitor<Object> {
-
     private final SymbolTable symbolTable = new SymbolTable();
 
     @Override
@@ -17,7 +16,7 @@ public class Interpreter extends EnpitsuBaseVisitor<Object> {
         try {
             symbolTable.declararVariable(nombre, tipo);
         } catch (Exception e) {
-            throw new RuntimeException(e.getMessage());
+            throw new EnpitsuRuntimeException(ctx, e.getMessage());
         }
         return null;
     }
@@ -29,7 +28,7 @@ public class Interpreter extends EnpitsuBaseVisitor<Object> {
         try {
             symbolTable.asignarValor(nombre, null, valor);
         } catch (Exception e) {
-            throw new RuntimeException(e.getMessage());
+            throw new EnpitsuRuntimeException(ctx, e.getMessage());
         }
         return valor;
     }
@@ -52,7 +51,7 @@ public class Interpreter extends EnpitsuBaseVisitor<Object> {
     public Object visitCondicionalIf(EnpitsuParser.CondicionalIfContext ctx) {
         Object condition = visit(ctx.expresion());
         if (!(condition instanceof Boolean)) {
-            throw new RuntimeException("La condición del 'if' debe ser booleana.");
+            throw new EnpitsuRuntimeException(ctx.expresion(), "La condición del 'if' debe ser booleana.");
         }
 
         if ((Boolean) condition) {
@@ -80,7 +79,7 @@ public class Interpreter extends EnpitsuBaseVisitor<Object> {
             }
             Object condition = visit(ctx.expresion());
             if (!(condition instanceof Boolean)) {
-                throw new RuntimeException("La condición del 'do-while' debe ser de tipo booleana.");
+                throw new EnpitsuRuntimeException(ctx.expresion(), "La condición del 'do-while' debe ser de tipo booleana.");
             }
             conditionVal = (Boolean) condition;
         } while (conditionVal);
@@ -99,7 +98,7 @@ public class Interpreter extends EnpitsuBaseVisitor<Object> {
             int r = (Integer) right;
             if (op.equals("*")) return l * r;
             if (op.equals("/")) {
-                if (r == 0) throw new ArithmeticException("División por cero.");
+                if (r == 0) throw new EnpitsuRuntimeException(ctx, "División por cero.");
                 return l / r;
             }
         } else if (left instanceof Number && right instanceof Number) {
@@ -107,11 +106,12 @@ public class Interpreter extends EnpitsuBaseVisitor<Object> {
             double r = ((Number) right).doubleValue();
             if (op.equals("*")) return l * r;
             if (op.equals("/")) {
-                if (r == 0.0) throw new ArithmeticException("División por cero.");
+                if (r == 0.0) throw new EnpitsuRuntimeException(ctx, "División por cero.");
                 return l / r;
             }
         }
-        throw new RuntimeException("Tipos incompatibles para el operador: " + op);
+
+        throw new EnpitsuRuntimeException(ctx, "Tipos incompatibles para el operador: " + op);
     }
 
     @Override
@@ -121,9 +121,6 @@ public class Interpreter extends EnpitsuBaseVisitor<Object> {
         String op = ctx.getChild(1).getText();
 
         if (op.equals("+")) {
-            if (left instanceof String || right instanceof String) {
-                return String.valueOf(left) + String.valueOf(right);
-            }
             if (left instanceof Integer && right instanceof Integer) {
                 return (Integer) left + (Integer) right;
             }
@@ -138,7 +135,8 @@ public class Interpreter extends EnpitsuBaseVisitor<Object> {
                 return ((Number) left).doubleValue() - ((Number) right).doubleValue();
             }
         }
-        throw new RuntimeException("Tipos incompatibles para el operador: " + op);
+
+        throw new EnpitsuRuntimeException(ctx, "Tipos incompatibles para el operador: " + op);
     }
 
     @Override
@@ -147,7 +145,7 @@ public class Interpreter extends EnpitsuBaseVisitor<Object> {
         Object right = visit(ctx.expresion(1));
         String op = ctx.getChild(1).getText();
 
-        if (op.equals("== ")) {
+        if (op.equals("==")) {
             return left == null ? right == null : left.equals(right);
         }
         if (op.equals("!=")) {
@@ -164,7 +162,8 @@ public class Interpreter extends EnpitsuBaseVisitor<Object> {
                 case ">=": return l >= r;
             }
         }
-        throw new RuntimeException("Operación relacional no soportada entre los tipos provistos.");
+
+        throw new EnpitsuRuntimeException(ctx, "Operación relacional no soportada entre los tipos provistos.");
     }
 
     @Override
@@ -173,14 +172,14 @@ public class Interpreter extends EnpitsuBaseVisitor<Object> {
         Object left = visit(ctx.expresion(0));
 
         if (!(left instanceof Boolean)) {
-            throw new RuntimeException("Operador lógico requiere operandos booleanos.");
+            throw new EnpitsuRuntimeException(ctx, "Operador lógico requiere operandos booleanos.");
         }
 
         if (op.equals("&&")) {
             if (!(Boolean) left) return false;
             Object right = visit(ctx.expresion(1));
             if (!(right instanceof Boolean)) {
-                throw new RuntimeException("Operador lógico requiere operandos booleanos.");
+                throw new EnpitsuRuntimeException(ctx, "Operador lógico requiere operandos booleanos.");
             }
             return (Boolean) right;
 
@@ -188,18 +187,22 @@ public class Interpreter extends EnpitsuBaseVisitor<Object> {
             if ((Boolean) left) return true;
             Object right = visit(ctx.expresion(1));
             if (!(right instanceof Boolean)) {
-                throw new RuntimeException("Operador lógico requiere operandos booleanos.");
+                throw new EnpitsuRuntimeException(ctx, "Operador lógico requiere operandos booleanos.");
             }
             return (Boolean) right;
         }
-        throw new RuntimeException("Operador lógico desconocido: " + op);
+        
+        throw new EnpitsuRuntimeException(ctx, "Operador lógico desconocido: " + op);
     }
 
     @Override
     public Object visitExpNot(EnpitsuParser.ExpNotContext ctx) {
         Object val = visit(ctx.expresion());
         if (!(val instanceof Boolean)) {
-            throw new RuntimeException("El operador '!' requiere un operando booleano.");
+            throw new EnpitsuRuntimeException(
+            		ctx.expresion(), 
+            		"El operador '!' requiere un operando booleano."
+            		);
         }
         return !(Boolean) val;
     }
@@ -221,11 +224,14 @@ public class Interpreter extends EnpitsuBaseVisitor<Object> {
             try {
                 Object valor = symbolTable.obtenerValor(nombre);
                 if (valor == null) {
-                    throw new RuntimeException("La variable " + nombre + " no ha sido inicializada.");
+                    throw new EnpitsuRuntimeException(
+                    		ctx,
+                    		"La variable " + nombre + " no ha sido inicializada."
+                    		);
                 }
                 return valor;
             } catch (Exception e) {
-                throw new RuntimeException(e.getMessage());
+                throw new EnpitsuRuntimeException(ctx, e.getMessage());
             }
         }
         if (ctx.NUM_VAL() != null) {
@@ -242,5 +248,20 @@ public class Interpreter extends EnpitsuBaseVisitor<Object> {
             return Boolean.parseBoolean(ctx.BOOLEAN_VAL().getText());
         }
         return null;
+    }
+    
+    public static class EnpitsuRuntimeException extends RuntimeException {
+		private final int linea;
+        private final int columna;
+
+        public EnpitsuRuntimeException(org.antlr.v4.runtime.ParserRuleContext ctx, String mensaje) {
+            super(mensaje);
+            linea = ctx.getStart().getLine();
+            columna = ctx.getStart().getCharPositionInLine();
+        }
+
+        public int getLinea() { return linea; }
+        public int getColumna() { return columna; }
+        public String getFormatedMessage() { return String.format("ERROR en [%d:%d]: %s", linea, columna, super.getMessage()); }
     }
 }

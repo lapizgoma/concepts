@@ -1,7 +1,9 @@
 import org.antlr.v4.runtime.*;
 import org.antlr.v4.runtime.tree.*;
+
 import java.io.FileInputStream;
 import java.io.InputStream;
+
 
 public class Main {
     public static void main(String[] args) throws Exception {
@@ -58,10 +60,16 @@ public class Main {
         System.out.println("");
         try {
             new Interpreter().visit(tree);
-        } catch (Exception e) {
-            System.err.println("ERROR: " + e.getMessage());
+        }catch (Interpreter.EnpitsuRuntimeException ee) {
+            System.err.println(ee.getFormatedMessage());
             System.exit(1);
         }
+        catch (Exception e) {
+            System.err.println("ERROR: " + e.getMessage());
+            System.exit(2);
+        }
+        System.out.println("");
+    	System.out.println ("No hubo errores en la interpretacion.");
         System.out.println("");
         System.out.println("===================================================");
     }
