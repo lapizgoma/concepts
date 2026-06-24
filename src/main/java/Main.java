@@ -24,17 +24,37 @@ public class Main {
         EnpitsuParser parser = new EnpitsuParser(tokens);
 
         ParseTree tree = parser.program();
-        System.out.println("== ARBOL ============================");
+        System.out.println("== ARBOL =========================================");
         System.out.println("");
         System.out.println(tree.toStringTree(parser));;
         System.out.println("");
-        System.out.println("=====================================");
+        System.out.println("==================================================");
+        System.out.println("");
+
+        System.out.println("== ANALISIS SEMANTICO ============================");
+        System.out.println("");
+        SemanticAnalyzer sa = new SemanticAnalyzer();
+        try {
+            sa.visit(tree);
+        } catch (Exception e) {
+            System.err.println("ERROR: " + e.getMessage());
+            System.exit(1);
+        }
         
+        System.out.println((sa.hayErrores()) ? "Hubo errores en en analisis semantico." : "No hubo errores en el analisis semantico.");
+        System.out.println("");
+        System.out.println("==================================================");
+        System.out.println("");
+
+        System.out.println("== INTERPRETER ===================================");
+        System.out.println("");
         try {
             new Interpreter().visit(tree);
         } catch (Exception e) {
             System.err.println("ERROR: " + e.getMessage());
             System.exit(1);
         }
+        System.out.println("");
+        System.out.println("===================================================");
     }
 }

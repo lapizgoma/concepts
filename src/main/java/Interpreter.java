@@ -40,6 +40,13 @@ public class Interpreter extends EnpitsuBaseVisitor<Object> {
         System.out.println(valor);
         return null;
     }
+    
+    @Override
+    public Object visitPrint(EnpitsuParser.PrintContext ctx) {
+        Object valor = visit(ctx.expresion());
+        System.out.print(valor);
+        return null;
+    }
 
     @Override
     public Object visitCondicionalIf(EnpitsuParser.CondicionalIfContext ctx) {
@@ -73,7 +80,7 @@ public class Interpreter extends EnpitsuBaseVisitor<Object> {
             }
             Object condition = visit(ctx.expresion());
             if (!(condition instanceof Boolean)) {
-                throw new RuntimeException("La condición del 'do-while' debe ser de tipo boolean.");
+                throw new RuntimeException("La condición del 'do-while' debe ser de tipo booleana.");
             }
             conditionVal = (Boolean) condition;
         } while (conditionVal);
@@ -214,7 +221,7 @@ public class Interpreter extends EnpitsuBaseVisitor<Object> {
             try {
                 Object valor = symbolTable.obtenerValor(nombre);
                 if (valor == null) {
-                    throw new RuntimeException("Error: La variable " + nombre + " no ha sido inicializada.");
+                    throw new RuntimeException("La variable " + nombre + " no ha sido inicializada.");
                 }
                 return valor;
             } catch (Exception e) {
