@@ -13,6 +13,7 @@ sentence
 	: var_decl 
 	| var_assign 
 	| println
+	| print
 	| condicionalIf
 	| estructuraDoWhile
 	;
@@ -33,8 +34,10 @@ var_assign: ID ASSIGN expresion SEMICOLON;
 
 
 // INSTRUCCIÓN DE SALIDA
-
+// imprimir con salto de línea
 println: PRINTLN PAR_OPEN expresion PAR_CLOSE SEMICOLON;
+// imprimir sin salto de línea
+print: PRINT PAR_OPEN expresion PAR_CLOSE SEMICOLON;
 
 // ESTRUCTURAS DE CONTROL
 
@@ -75,6 +78,7 @@ factor
 PROGRAM:'program';
 VAR:'var';
 PRINTLN:'println';
+PRINT:'print';
 IF: 'if';
 ELSE: 'else';
 DO: 'do';
@@ -88,7 +92,7 @@ BOOLEAN_TYPE: 'boolean';
 
 
 // VALORES LITERALES
-NUM : '0' | [1-9] [0-09]* ; //para que no acepte 0 a la izq
+NUM : '0' | [1-9] [0-9]* ; //para que no acepte 0 a la izq
 FLOAT : '0' '.' [0-9]+ | [1-9] [0-9]* '.' [0-9]+ ;
 STRING_VAL  : '"' (~['"\r\n'] | '\\' .)* '"' ;
 BOOLEAN_VAL : 'true' | 'false';
