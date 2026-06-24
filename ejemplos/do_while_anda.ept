@@ -1,0 +1,7 @@
+program haz_mientras {
+	i = 0;
+	do {
+		println ("iteración nro:");
+		i = i + 1;
+	} while (i < 5);
+}

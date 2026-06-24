@@ -38,8 +38,10 @@ println: PRINTLN PAR_OPEN expresion PAR_CLOSE SEMICOLON;
 
 // ESTRUCTURAS DE CONTROL
 
-condicionalIf: IF PAR_OPEN expresion PAR_CLOSE BRA_OPEN sentence* BRA_CLOSE 
-	(ELSE BRA_OPEN sentence* BRA_CLOSE)?;
+condicionalIf
+    : IF PAR_OPEN expresion PAR_CLOSE BRA_OPEN (ifSentences+=sentence)* BRA_CLOSE 
+      (ELSE BRA_OPEN (elseSentences+=sentence)* BRA_CLOSE)?
+    ;
 	
 estructuraDoWhile: DO BRA_OPEN sentence* BRA_CLOSE WHILE 
 	PAR_OPEN expresion PAR_CLOSE SEMICOLON;

@@ -1,0 +1,17 @@
+program si_tambien {
+	println (" === if_else.ept === ");
+	println ("Probando un if sin else: ");
+	if (true) {
+		println ("Entró acá y eso está bien.");
+	}
+	
+	println (" === //// === ");
+	println ("Probando un if con else: ");
+	if (false) {
+		println ("Entró acá y eso NO está bien.");
+	}
+	else {
+		println ("Entró acá y eso está bien.");
+	}
+	println (" === //// === ");
+}
