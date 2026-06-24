@@ -1,0 +1,106 @@
+program numbersss {
+	println (" === aritmetica.ept === ");
+
+	// 
+	// OPERACIONES CON ENTEROS (INT)
+	// 
+	println (" --- Enteros --- ");
+	var int int_a;
+	var int int_b;
+	var int int_res;
+
+	int_a = 10;
+	int_b = 3;
+
+	int_res = int_a + int_b;
+	print ("Suma (Esperado 13): ");
+	println (int_res);
+
+	int_res = int_a - int_b;
+	print ("Resta (Esperado 7): ");
+	println (int_res);
+
+	int_res = int_a * int_b;
+	print ("Multiplicacion (Esperado 30): ");
+	println (int_res);
+
+	int_res = int_a / int_b;
+	print ("Division entera (Esperado 3): ");
+	println (int_res);
+
+
+	// 
+	// OPERACIONES CON DECIMALES
+	// 
+	println (" --- Decimales --- ");
+	var float flt_a;
+	var float flt_b;
+	var float flt_res;
+
+	flt_a = 5.5;
+	flt_b = 2.0;
+
+	flt_res = flt_a + flt_b;
+	print ("Suma float (Esperado 7.5): ");
+	println (flt_res);
+
+	flt_res = flt_a - flt_b;
+	print ("Resta float (Esperado 3.5): ");
+	println (flt_res);
+
+	flt_res = flt_a * flt_b;
+	print ("Multiplicacion float (Esperado 11.0): ");
+	println (flt_res);
+
+	flt_res = flt_a / flt_b;
+	print ("Division float (Esperado 2.75): ");
+	println (flt_res);
+
+
+	// 
+	// OPERACIONES MIXTAS Y PRECEDENCIA
+	// 
+	println (" --- Mixtas y precedencia --- ");
+	var float mixta_res;
+	
+	mixta_res = int_a + flt_a; 
+	print ("Suma mixta int + float (Esperado 15.5): ");
+	println (mixta_res);
+
+	mixta_res = 2 + 3 * 4;
+	print ("Precedencia sin parentesis 2 + 3 * 4 (Esperado 14): ");
+	println (mixta_res);
+
+	mixta_res = (2 + 3) * 4;
+	print ("Precedencia con parentesis (2 + 3) * 4 (Esperado 20): ");
+	println (mixta_res);
+
+
+	// 
+	// SITUACIONES DE ERROR SEMÁNTICO
+	//
+	println (" --- Errores semánticos (Verificar salida de errores) --- ");
+
+	println ("Esperado -> ERROR: division por cero.");
+	var int div_cero_int;
+	div_cero_int = 10 / 0;
+
+	println ("Esperado -> ERROR: division por cero.");
+	var float div_cero_flt;
+	div_cero_flt = 5.5 / 0.0;
+
+	println ("Esperado -> ERROR: operacion aritmetica requiere tipos numericos, se obtuvo 'int' y 'string'.");
+	var int err_string;
+	err_string = 5 + "texto";
+
+	println ("Esperado -> ERROR: operacion aritmetica requiere tipos numericos, se obtuvo 'boolean' y 'int'.");
+	var int err_bool;
+	err_bool = true * 10;
+
+	println ("Esperado -> ERROR: no se puede asignar 'string' a la variable 'err_asignacion' de tipo 'int'.");
+	var int err_asignacion;
+	err_asignacion = "no soy un entero";
+
+
+	println (" === //// === ");
+}

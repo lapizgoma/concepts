@@ -124,14 +124,6 @@ public class SemanticAnalyzer extends EnpitsuBaseVisitor<String> {
         String izq = visit(ctx.expresion(0));
         String der = visit(ctx.expresion(1));
 
-        if (ctx.DIV() != null) {
-            String textoDer = ctx.expresion(1).getText();
-            if (textoDer.equals("0") || textoDer.equals("0.0")) {
-                error(ctx, "división por cero.");
-                return null;
-            }
-        }
-
         if (!esNumerico(izq) || !esNumerico(der)) {
             error(ctx, "operación aritmética requiere tipos numéricos, se obtuvo '" + izq + "' y '" + der + "'.");
             return null;

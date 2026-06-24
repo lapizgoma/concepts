@@ -1,0 +1,93 @@
+program imposible_compa {
+	println (" === logic.ept === ");
+
+	// 
+	// OPERACIONES LÓGICAS
+	// 
+	println (" --- Operaciones Logicas --- ");
+	var boolean bool_a;
+	var boolean bool_b;
+	var boolean bool_res;
+
+	bool_a = true;
+	bool_b = false;
+
+	bool_res = bool_a && bool_b;
+	print ("AND (Esperado false): ");
+	println (bool_res);
+
+	bool_res = bool_a || bool_b;
+	print ("OR (Esperado true): ");
+	println (bool_res);
+
+	bool_res = !bool_a;
+	print ("NOT (Esperado false): ");
+	println (bool_res);
+
+
+	// 
+	// COMPARACIONES RELACIONALES
+	// 
+	println (" --- Comparaciones Relacionales --- ");
+	var boolean comp_res;
+
+	comp_res = 5 > 3;
+	print ("Mayor que 5 > 3 (Esperado true): ");
+	println (comp_res);
+
+	comp_res = 5 < 3;
+	print ("Menor que 5 < 3 (Esperado false): ");
+	println (comp_res);
+
+	comp_res = 10 == 10;
+	print ("Igualdad 10 == 10 (Esperado true): ");
+	println (comp_res);
+
+	comp_res = 10 != 10;
+	print ("Diferencia 10 != 10 (Esperado false): ");
+	println (comp_res);
+
+	comp_res = 4.5 <= 4.5;
+	print ("Menor o igual float 4.5 <= 4.5 (Esperado true): ");
+	println (comp_res);
+
+
+	// 
+	// EXPRESIONES COMBINADAS
+	// 
+	println (" --- Expresiones Combinadas --- ");
+	var boolean comb_res;
+
+	comb_res = (5 > 3) && (2 < 4);
+	print ("Combinado (5 > 3) && (2 < 4) (Esperado true): ");
+	println (comb_res);
+
+	comb_res = !(10 == 10) || (true && false);
+	print ("Combinado complejo !(10==10) || (true && false) (Esperado false): ");
+	println (comb_res);
+
+
+	// 
+	// SITUACIONES DE ERROR SEMÁNTICO
+	// 
+	println (" --- Errores semánticos (verificar salida de errores) --- ");
+
+	println ("Esperado -> ERROR: operador logico requiere booleanos, se obtuvo 'int' y 'boolean'.");
+	var boolean err_and;
+	err_and = 5 && true;
+
+	println ("Esperado -> ERROR: operador logico requiere booleanos, se obtuvo 'boolean' y 'string'.");
+	var boolean err_or;
+	err_or = false || "texto";
+
+	println ("Esperado -> ERROR: '!' requiere un booleano, se obtuvo 'int'.");
+	var boolean err_not;
+	err_not = !10;
+
+	println ("Esperado -> ERROR: comparacion entre tipos incompatibles 'int' y 'string'.");
+	var boolean err_comp;
+	err_comp = 5 == "5";
+
+
+	println (" === Fin de Pruebas === ");
+}
