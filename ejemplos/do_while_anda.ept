@@ -1,7 +1,17 @@
 program haz_mientras {
+	println (" === do_while_anda.ept === ");
+	println ("");
+	println ("test de do-while con 5 iteraciones:");
+	println ("");
+	var int i;
 	i = 0;
 	do {
-		println ("iteración nro:");
 		i = i + 1;
+		println ("iteración nro: " + i);
 	} while (i < 5);
+	
+	println ("");
+	println ("do-while realizado con éxito.");
+	println (" === //// === ");
+	
 }

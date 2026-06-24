@@ -1,0 +1,14 @@
+program haz_mientras {
+	println (" === do_while_no_anda.ept === ");
+	println ("");
+	println ("test de do-while con una condición que no es válida:");
+	println ("");
+	var int i;
+	i = 0;
+	do {
+		i = i + 1;
+		println ("iteración nro: " + i);
+	} while (i = i + 1;);
+	
+	println (" === //// === ");
+}
