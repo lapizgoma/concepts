@@ -64,7 +64,7 @@ expresion
 	
 factor
 	: ID
-	| NUM
+	| NUM_VAL
 	| FLOAT_VAL
 	| STRING_VAL
 	| BOOLEAN_VAL
@@ -92,9 +92,9 @@ BOOLEAN_TYPE: 'boolean';
 
 
 // VALORES LITERALES
-NUM : '0' | [1-9] [0-9]* ; //para que no acepte 0 a la izq
-FLOAT : '0' '.' [0-9]+ | [1-9] [0-9]* '.' [0-9]+ ;
-STRING_VAL  : '"' (~['"\r\n'] | '\\' .)* '"' ;
+NUM_VAL : '0' | [1-9] [0-9]* ; //para que no acepte 0 a la izq
+FLOAT_VAL : '0' '.' [0-9]+ | [1-9] [0-9]* '.' [0-9]+ ;
+STRING_VAL  : '"' (~["\r\n\\] | '\\' .)* '"' ;
 BOOLEAN_VAL : 'true' | 'false';
 
 // SIGNOS Y OPERADORES

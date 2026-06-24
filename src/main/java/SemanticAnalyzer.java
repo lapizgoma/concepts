@@ -20,9 +20,14 @@ public class SemanticAnalyzer extends EnpitsuBaseVisitor<String> {
     public String visitEstructuraDoWhile (EnpitsuParser.EstructuraDoWhileContext ctx) {
     	String condicion = visit(ctx.expresion());
     	
-    	if (!condicion.equals("boolean")) {
+    	if (!"boolean".equals(condicion)) {
     		error ("se espera una valor de tipo booleano para la condición del bucle.");
     	}
+    	else {
+        	for (EnpitsuParser.SentenceContext s : ctx.sentence()) {
+                visit(s);
+            }
+        }
     	
     	return null;
     }
@@ -90,7 +95,7 @@ public class SemanticAnalyzer extends EnpitsuBaseVisitor<String> {
                 return null;
             }
         }
-        if (ctx.NUM() != null) return "int";
+        if (ctx.NUM_VAL() != null) return "int";
         if (ctx.FLOAT_VAL() != null) return "float";
         if (ctx.STRING_VAL() != null) return "string";
         if (ctx.BOOLEAN_VAL() != null) return "boolean";

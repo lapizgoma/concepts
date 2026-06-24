@@ -228,8 +228,8 @@ public class Interpreter extends EnpitsuBaseVisitor<Object> {
                 throw new RuntimeException(e.getMessage());
             }
         }
-        if (ctx.NUM() != null) {
-            return Integer.parseInt(ctx.NUM().getText());
+        if (ctx.NUM_VAL() != null) {
+            return Integer.parseInt(ctx.NUM_VAL().getText());
         }
         if (ctx.FLOAT_VAL() != null) {
             return Double.parseDouble(ctx.FLOAT_VAL().getText());
